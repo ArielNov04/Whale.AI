@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whale.AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Custom styles for better UI */
+        .card {
+            background-color: #2d3748;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .header {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        .button-primary {
+            background-color: #3182ce;
+            padding: 10px 20px;
+            border-radius: 4px;
+            color: white;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 text-white font-sans">
+
+    <!-- Header -->
+    <header class="flex justify-between items-center p-6 bg-gray-800">
+        <h1 class="text-2xl font-bold">Whale.AI</h1>
+
+        <!-- Header Right Section (Icons) -->
+        <div class="flex items-center space-x-6">
+            <!-- Canvas Icon (Titik 3 menu) -->
+            <button class="bg-gray-700 p-2 rounded hover:bg-gray-600" id="menuButton">
+                <span class="text-xl">⋮</span> <!-- Titik 3 -->
+            </button>
+            <!-- Share Icon -->
+            <button class="bg-gray-700 p-2 rounded hover:bg-gray-600">
+                <span class="text-xl">🔗</span> <!-- Share Icon -->
+            </button>
+            <!-- Log In Button -->
+            <button class="bg-blue-500 px-4 py-2 rounded hover:bg-blue-600 text-white" id="loginButton">
+                Log In
+            </button>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <div class="flex">
+        <aside class="w-64 bg-gray-800 p-6">
+            <h2 class="text-2xl font-bold mb-6">AI Analyzer</h2>
+            <nav class="space-y-4">
+                <a href="#" class="block py-2 px-4 bg-gray-700 rounded hover:bg-gray-600" data-section="dashboard">Dashboard</a>
+                <a href="#" class="block py-2 px-4 hover:bg-gray-600 rounded" data-section="chat">Chat AI</a>
+                <a href="#" class="block py-2 px-4 hover:bg-gray-600 rounded" data-section="saham">Saham</a>
+                <a href="#" class="block py-2 px-4 hover:bg-gray-600 rounded" data-section="crypto">Crypto</a>
+                <a href="#" class="block py-2 px-4 hover:bg-gray-600 rounded" data-section="analisa">Analisa</a>
+                <a href="#" class="block py-2 px-4 hover:bg-gray-600 rounded" data-section="settings">Settings</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 overflow-y-auto">
+            <h1 id="section-title" class="text-3xl font-bold mb-6">Dashboard</h1>
+
+            <!-- Dashboard Section -->
+            <div id="section-dashboard">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="card">
+                        <h2 class="text-xl font-semibold mb-2">Harga Saham</h2>
+                        <canvas id="stockChart"></canvas>
+                    </div>
+                    <div class="card">
+                        <h2 class="text-xl font-semibold mb-2">Harga Crypto</h2>
+                        <canvas id="cryptoChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat AI Section -->
+            <div id="section-chat" class="hidden bg-gray-800 p-6 rounded-lg shadow-md mb-6">
+                <h2 class="text-xl font-semibold mb-4">Chat AI</h2>
+                <div class="h-64 overflow-y-auto bg-gray-700 p-4 rounded mb-4" id="chatBox">
+                    <p class="text-sm text-gray-400">AI: Selamat datang! Tanyakan analisa saham atau crypto di sini.</p>
+                </div>
+                <div class="flex">
+                    <input type="text" id="userInput" class="flex-1 px-4 py-2 rounded-l bg-gray-600 text-white focus:outline-none" placeholder="Tulis pertanyaan kamu...">
+                    <button onclick="sendMessage()" class="bg-blue-500 px-4 py-2 rounded-r hover:bg-blue-600">Kirim</button>
+                </div>
+            </div>
+
+            <!-- Saham Section -->
+            <div id="section-saham" class="hidden bg-gray-800 p-6 rounded-lg shadow-md mb-6">
+                <h2 class="text-xl font-semibold mb-4">Saham</h2>
+                <p class="text-gray-300">Analisa saham berdasarkan data terkini. Masukkan simbol saham yang ingin dianalisa.</p>
+                <div class="flex mb-4">
+                    <input id="sahamInput" type="text" placeholder="Contoh: BBCA" class="flex-1 px-4 py-2 bg-gray-700 text-white rounded-l focus:outline-none">
+                    <button onclick="analyzeSaham()" class="bg-green-500 px-4 py-2 rounded-r hover:bg-green-600">Analisa</button>
+                </div>
+                <div id="sahamAnalysis" class="bg-gray-700 p-4 rounded text-sm text-gray-200">
+                    <p>Hasil analisa saham akan muncul di sini.</p>
+                </div>
+            </div>
+
+            <!-- Crypto Section -->
+            <div id="section-crypto" class="hidden bg-gray-800 p-6 rounded-lg shadow-md mb-6">
+                <h2 class="text-xl font-semibold mb-4">Crypto</h2>
+                <p class="text-gray-300">Masukkan simbol crypto untuk mendapatkan analisa.</p>
+                <div class="flex mb-4">
+                    <input id="cryptoInput" type="text" placeholder="Contoh: BTC" class="flex-1 px-4 py-2 bg-gray-700 text-white rounded-l focus:outline-none">
+                    <button onclick="analyzeCrypto()" class="bg-green-500 px-4 py-2 rounded-r hover:bg-green-600">Analisa</button>
+                </div>
+                <div id="cryptoAnalysis" class="bg-gray-700 p-4 rounded text-sm text-gray-200">
+                    <p>Hasil analisa crypto akan muncul di sini.</p>
+                </div>
+            </div>
+
+            <!-- Analisa Section -->
+            <div id="section-analisa" class="hidden bg-gray-800 p-6 rounded-lg shadow-md mb-6">
+                <h2 class="text-xl font-semibold mb-4">Analisa Saham & Crypto Berbasis AI</h2>
+                <p class="text-gray-300 mb-4">Masukkan kode saham atau crypto untuk mendapatkan analisa AI.</p>
+                <div class="flex mb-4">
+                    <input id="symbolInput" type="text" placeholder="Contoh: BBCA atau BTC" class="flex-1 px-4 py-2 bg-gray-700 text-white rounded-l focus:outline-none">
+                    <button onclick="analyzeSymbol()" class="bg-green-500 px-4 py-2 rounded-r hover:bg-green-600">Analisa</button>
+                </div>
+                <div id="aiAnalysis" class="bg-gray-700 p-4 rounded text-sm text-gray-200">
+                    <p>Analisa AI akan muncul di sini.</p>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="section-settings" class="hidden bg-gray-800 p-6 rounded-lg shadow-md mb-6">
+                <h2 class="text-xl font-semibold mb-4">Pengaturan</h2>
+                <p class="text-gray-300">Atur preferensi AI dan lainnya di sini.</p>
+                <button class="bg-blue-500 px-4 py-2 rounded hover:bg-blue-600">Simpan Pengaturan</button>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // Update charts with sample data
+        const stockChart = new Chart(document.getElementById('stockChart'), {
+            type: 'line',
+            data: {
+                labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum'],
+                datasets: [{
+                    label: 'Harga Saham',
+                    data: [150, 155, 160, 158, 165],
+                    borderColor: '#4F46E5',
+                    backgroundColor: 'rgba(79, 70, 229, 0.2)',
+                    fill: true
+                }]
+            }
+        });
+
+        const cryptoChart = new Chart(document.getElementById('cryptoChart'), {
+            type: 'line',
+            data: {
+                labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum'],
+                datasets: [{
+                    label: 'Harga Crypto',
+                    data: [30000, 31000, 29000, 29500, 30500],
+                    borderColor: '#10B981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                    fill: true
+                }]
+            }
+        });
+
+        // Function to send message in Chat AI
+        function sendMessage() {
+            const input = document.getElementById('userInput');
+            const chatBox = document.getElementById('chatBox');
+            const message = input.value.trim();
+            if (message) {
+                chatBox.innerHTML += `<p class='text-sm'><strong>Kamu:</strong> ${message}</p>`;
+                setTimeout(() => {
+                    chatBox.innerHTML += `<p class='text-sm text-gray-400'><strong>AI:</strong> Analisa belum tersedia secara real-time. Fitur dalam pengembangan.</p>`;
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                }, 1000);
+                input.value = '';
+            }
+        }
+
+        // Function to analyze stocks
+        function analyzeSaham() {
+            const saham = document.getElementById('sahamInput').value.toUpperCase();
+            const output = document.getElementById('sahamAnalysis');
+            if (!saham) return;
+
+            output.innerHTML = `<p>Menganalisis <strong>${saham}</strong>...</p>`;
+
+            setTimeout(() => {
+                if (saham === 'BBCA') {
+                    output.innerHTML = `
+                        <h3 class="font-semibold mb-2">BBCA</h3>
+                        <p>Harga saat ini: Rp8.700</p>
+                        <p>Rekomendasi AI: <span class="text-green-400">Beli</span></p>
+                        <p>Alasan: BBCA menunjukkan tren kenaikan stabil, dengan volume beli yang tinggi selama 3 hari terakhir.</p>`;
+                } else {
+                    output.innerHTML = `<p>Data untuk <strong>${saham}</strong> belum tersedia atau tidak dikenali.</p>`;
+                }
+            }, 1500);
+        }
+
+        // Function to analyze crypto
+        function analyzeCrypto() {
+            const crypto = document.getElementById('cryptoInput').value.toUpperCase();
+            const output = document.getElementById('cryptoAnalysis');
+            if (!crypto) return;
+
+            output.innerHTML = `<p>Menganalisis <strong>${crypto}</strong>...</p>`;
+
+            setTimeout(() => {
+                if (crypto === 'BTC') {
+                    output.innerHTML = `
+                        <h3 class="font-semibold mb-2">Bitcoin (BTC)</h3>
+                        <p>Harga saat ini: $30,500</p>
+                        <p>Rekomendasi AI: <span class="text-yellow-400">Tahan</span></p>
+                        <p>Alasan: BTC bergerak dalam konsolidasi. AI menunggu sinyal breakout sebelum memberikan sinyal beli atau jual.</p>`;
+                } else {
+                    output.innerHTML = `<p>Data untuk <strong>${crypto}</strong> belum tersedia atau tidak dikenali.</p>`;
+                }
+            }, 1500);
+        }
+
+        // Function to analyze a symbol (AI-based)
+        function analyzeSymbol() {
+            const symbol = document.getElementById('symbolInput').value.toUpperCase();
+            const
+	output = document.getElementById('aiAnalysis');
+	if (!symbol) return;
+	        output.innerHTML = `<p>Memproses analisa AI untuk <strong>${symbol}</strong>...</p>`;
+        setTimeout(() => {
+            output.innerHTML = `
+                <h3 class="font-semibold mb-2">Analisa ${symbol}</h3>
+                <p>Harga terkini: Rp9.000 / $32,000</p>
+                <p>Rekomendasi AI: <span class="text-blue-400">Pantau</span></p>
+                <p>Alasan: Tidak ditemukan sinyal signifikan. Disarankan untuk memantau pergerakan dalam 24 jam ke depan.</p>`;
+        }, 1500);
+    }
+
+    // Navigation function
+    const links = document.querySelectorAll('aside nav a');
+    const sections = document.querySelectorAll('main > div[id^="section-"]');
+
+    links.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = link.dataset.section;
+            document.getElementById('section-title').innerText = link.innerText;
+            sections.forEach(section => section.classList.add('hidden'));
+            document.getElementById(`section-${target}`).classList.remove('hidden');
+        });
+    });
+</script>
+</body>
+</html>
